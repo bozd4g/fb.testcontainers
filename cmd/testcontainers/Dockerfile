@@ -3,10 +3,10 @@ FROM golang:1.15-alpine
 ENV CGO_ENABLED=0
 
 WORKDIR /src
-COPY go.mod ./
+COPY ../../go.mod ./
 RUN go mod download
 
-COPY . .
+COPY ../.. .
 RUN CGO_ENABLED=0 go build -o /bin/app .
 
 ENTRYPOINT ["/bin/app"]
