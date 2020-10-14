@@ -1,0 +1,79 @@
+basePath: /api
+definitions:
+  userservice.UserCreateRequestDto:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      surname:
+        type: string
+    type: object
+  userservice.UserDto:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      surname:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: me@furkanbozdag.com
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a user microservice.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: User API
+  version: "1.0"
+paths:
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: This method returns all users recorded in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/userservice.UserDto'
+            type: array
+      summary: Get all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: This method creates a new user
+      parameters:
+      - description: Create a user
+        in: body
+        name: UserCreateRequestDto
+        required: true
+        schema:
+          $ref: '#/definitions/userservice.UserCreateRequestDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            type: string
+      summary: Create a user
+      tags:
+      - Users
+swagger: "2.0"
