@@ -11,5 +11,6 @@ type Entity struct {
 }
 
 type CreatedEvent struct {
-	Id uuid.UUID `json:"id"`
+	ExchangeName string    `json:"-"`
+	Id           uuid.UUID `json:"id"`
 }

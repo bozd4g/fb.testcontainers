@@ -13,6 +13,6 @@ type IUserService interface {
 }
 
 type UserService struct {
-	rabbitmq   rabbitmq.IRabbitMq
+	broker     rabbitmq.IRabbitMq
 	repository userrepository.IUserRepository
 }

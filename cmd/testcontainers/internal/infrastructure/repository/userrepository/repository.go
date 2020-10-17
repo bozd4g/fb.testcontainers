@@ -2,6 +2,7 @@ package userrepository
 
 import (
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/domain/user"
+	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/infrastructure/brokerconsts"
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-memdb"
 )
@@ -63,7 +64,10 @@ func (repository UserRepository) Add(entity user.Entity) (*user.CreatedEvent, er
 
 	transaction.Commit()
 	defer transaction.Abort()
-	return &user.CreatedEvent{}, nil
+	return &user.CreatedEvent{
+		ExchangeName: brokerconsts.UserCreatedExchangeName,
+		Id:           entity.Id,
+	}, nil
 }
 
 func (repository UserRepository) Get(id uuid.UUID) (*user.Entity, error) {

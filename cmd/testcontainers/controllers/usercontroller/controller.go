@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-func New(engine *gin.Engine, service userservice.IUserService) IUserController {
-	return &UserController{engine: engine, service: service}
+func New(service userservice.IUserService) IUserController {
+	return &UserController{service: service}
 }
 
-func (controller UserController) Init() {
-	group := controller.engine.Group("api/users")
+func (controller UserController) Init(e *gin.Engine) {
+	group := e.Group("api/users")
 	{
 		group.POST("", controller.createHandler)
 		group.GET("", controller.getAllHandler)
@@ -22,17 +22,16 @@ func (controller UserController) Init() {
 // @Description This method creates a new user
 // @Accept  json
 // @Produce  json
-// @tags Users
+// @tags UserController
 // @param UserCreateRequestDto body userservice.UserCreateRequestDto true "Create a user"
 // @Success 201 {string} string	"Success"
-// @Router /users [post]
+// @Router /api/users [post]
 func (controller UserController) createHandler(c *gin.Context) {
 	var userDto userservice.UserDto
 	if err := c.ShouldBindJSON(&userDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 
 	err := controller.service.Create(userDto)
 	if err != nil {
@@ -47,9 +46,9 @@ func (controller UserController) createHandler(c *gin.Context) {
 // @Description This method returns all users recorded in the database
 // @Accept  json
 // @Produce  json
-// @tags Users
+// @tags UserController
 // @Success 200 {object} []userservice.UserDto "Success"
-// @Router /users [get]
+// @Router /api/users [get]
 func (controller UserController) getAllHandler(c *gin.Context) {
 	users, err := controller.service.GetAll()
 	if err != nil {

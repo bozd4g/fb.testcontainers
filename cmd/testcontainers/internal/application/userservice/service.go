@@ -1,6 +1,7 @@
 package userservice
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/domain/user"
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/infrastructure/repository/userrepository"
@@ -10,7 +11,7 @@ import (
 )
 
 func New(broker rabbitmq.IRabbitMq, repository userrepository.IUserRepository) IUserService {
-	return UserService{rabbitmq: broker, repository: repository}
+	return UserService{broker: broker, repository: repository}
 }
 
 func (service UserService) Create(userDto UserDto) error {
@@ -25,21 +26,30 @@ func (service UserService) Create(userDto UserDto) error {
 		return err
 	}
 
-	// TODO: Throw event to queue
-	fmt.Println(event)
+	jsonEvent, err := json.Marshal(&event)
+	if err != nil {
+		return err
+	}
+
+	err = service.broker.Publish(event.ExchangeName, jsonEvent)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("An error occured while throwing the event! Event: %+v, Error: %v+", event, err))
+		return err
+	}
 	return nil
 }
 
 func (service UserService) GetAll() ([]UserDto, error) {
+	dtos := make([]UserDto, 0)
+
 	users, err := service.repository.GetAll()
 	if err != nil {
-		return nil, err
+		return dtos, err
 	}
 
-	var dtos []UserDto
 	err = mapstructure.Decode(users, &dtos)
 	if err != nil {
-		return nil, err
+		return dtos, err
 	}
 
 	return dtos, nil

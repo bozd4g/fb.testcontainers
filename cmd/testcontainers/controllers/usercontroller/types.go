@@ -6,10 +6,9 @@ import (
 )
 
 type IUserController interface{
-	Init()
+	Init(e *gin.Engine)
 }
 
 type UserController struct {
-	engine  *gin.Engine
 	service userservice.IUserService
 }

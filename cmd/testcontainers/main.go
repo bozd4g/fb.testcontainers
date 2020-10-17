@@ -2,11 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/controllers"
-	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/application/userservice"
-	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/infrastructure/repository/userrepository"
-	"github.com/bozd4g/fb.testcontainers/pkg/rabbitmq"
-	"os"
+	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/app"
 )
 
 // @title User API
@@ -22,30 +18,11 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host localhost:8080
-// @BasePath /api
+// @BasePath /
 func main() {
-	broker, err := rabbitmq.New("amqp://guest:123456@localhost:5672/demand")
+	application := app.New()
+	err := application.Build().Run()
 	if err != nil {
-		panic(err)
-	}
-
-	userRepository, err := userrepository.New()
-	if err != nil {
-		panic(err)
-	}
-	userService := userservice.New(broker, userRepository)
-
-	router := controllers.New(userService)
-	router.InitRoutes()
-	router.InitMiddlewares()
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	err = router.Get().Run(fmt.Sprintf(":%s", port))
-	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("app cannot be started! Error %+v", err))
 	}
 }
