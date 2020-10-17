@@ -19,11 +19,11 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
+	github.com/testcontainers/testcontainers-go v0.9.0 // indirect
 	github.com/ugorji/go v1.1.11 // indirect
 	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee // indirect
 	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb // indirect
 	golang.org/x/sys v0.0.0-20201014080544-cc95f250f6bc // indirect
 	golang.org/x/tools v0.0.0-20201014170642-d1624618ad65 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
