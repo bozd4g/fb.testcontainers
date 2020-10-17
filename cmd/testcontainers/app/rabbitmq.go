@@ -1,21 +1,21 @@
 package app
 
 import (
+	"fmt"
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/infrastructure/brokerconsts"
 	"github.com/bozd4g/fb.testcontainers/pkg/rabbitmq"
 )
 
-func (application *Application) AddRabbitMq() *Application {
-	broker, err := rabbitmq.New("amqp://guest:123456@localhost/demand")
+func (application *Application) AddRabbitMq(opts rabbitmq.Opts) *Application {
+	broker, err := rabbitmq.New(fmt.Sprintf("amqp://%s:%s@%s/%s", opts.Username, opts.Password, opts.Host, opts.VirtualHost))
 	if err != nil {
-		application.logger.Errorf("An error occured while connection to rabbitmq! Error: %+v", err)
+		application.logger.Error("An error occured while connection to rabbitmq! ", err)
 		return application
 	}
 
 	application.broker = broker
-	defer broker.Close()
-
 	application.InitUserCreatedEvent()
+
 	return application
 }
 

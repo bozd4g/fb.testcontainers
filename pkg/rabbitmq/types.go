@@ -15,3 +15,10 @@ type RabbitMq struct {
 	connection *amqp.Connection
 	channel    *amqp.Channel
 }
+
+type Opts struct {
+	Username    string
+	Password    string
+	Host        string
+	VirtualHost string
+}

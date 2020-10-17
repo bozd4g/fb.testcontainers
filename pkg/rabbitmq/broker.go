@@ -13,7 +13,7 @@ func New(ampqUrl string) (IRabbitMq, error) {
 		return nil, err
 	}
 
-	return &RabbitMq{channel: channel}, nil
+	return &RabbitMq{connection: connection, channel: channel}, nil
 }
 
 func (broker *RabbitMq) DeclareExhange(name string) error {
