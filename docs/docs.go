@@ -33,7 +33,30 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/users": {
+        "/": {
+            "get": {
+                "description": "This method redirects to swagger ui",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IndexController"
+                ],
+                "summary": "redirectToSwaggerUi",
+                "responses": {
+                    "308": {
+                        "description": "Redirect",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users": {
             "get": {
                 "description": "This method returns all users recorded in the database",
                 "consumes": [
@@ -43,7 +66,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "UserController"
                 ],
                 "summary": "Get all users",
                 "responses": {
@@ -67,7 +90,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "UserController"
                 ],
                 "summary": "Create a user",
                 "parameters": [
@@ -146,7 +169,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
 	Host:        "localhost:8080",
-	BasePath:    "/api",
+	BasePath:    "/",
 	Schemes:     []string{},
 	Title:       "User API",
 	Description: "This is a user microservice.",

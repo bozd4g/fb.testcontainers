@@ -16,9 +16,32 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/api",
+    "basePath": "/",
     "paths": {
-        "/users": {
+        "/": {
+            "get": {
+                "description": "This method redirects to swagger ui",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IndexController"
+                ],
+                "summary": "redirectToSwaggerUi",
+                "responses": {
+                    "308": {
+                        "description": "Redirect",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users": {
             "get": {
                 "description": "This method returns all users recorded in the database",
                 "consumes": [
@@ -28,7 +51,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "UserController"
                 ],
                 "summary": "Get all users",
                 "responses": {
@@ -52,7 +75,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "UserController"
                 ],
                 "summary": "Create a user",
                 "parameters": [

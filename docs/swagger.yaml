@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /
 definitions:
   userservice.UserCreateRequestDto:
     properties:
@@ -38,7 +38,22 @@ info:
   title: User API
   version: "1.0"
 paths:
-  /users:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: This method redirects to swagger ui
+      produces:
+      - application/json
+      responses:
+        "308":
+          description: Redirect
+          schema:
+            type: string
+      summary: redirectToSwaggerUi
+      tags:
+      - IndexController
+  /api/users:
     get:
       consumes:
       - application/json
@@ -54,7 +69,7 @@ paths:
             type: array
       summary: Get all users
       tags:
-      - Users
+      - UserController
     post:
       consumes:
       - application/json
@@ -75,5 +90,5 @@ paths:
             type: string
       summary: Create a user
       tags:
-      - Users
+      - UserController
 swagger: "2.0"
