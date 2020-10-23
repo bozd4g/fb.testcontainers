@@ -20,6 +20,8 @@ func (application *Application) Build() IApplication {
 		VirtualHost: "demand",
 	})
 
+	application.AddPostgreSql("host=localhost user=postgres password=123456 dbname=testcontainers port=5432 sslmode=disable")
+
 	application.AddRouter()
 	application.AddControllers().InitMiddlewares().AddSwagger()
 
@@ -32,7 +34,9 @@ func (application *Application) Run() error {
 		port = "8080"
 	}
 
-	defer application.broker.Close()
+	if application.broker != nil {
+		defer application.broker.Close()
+	}
 
 	err := application.engine.Run(fmt.Sprintf(":%s", port))
 	if err != nil {

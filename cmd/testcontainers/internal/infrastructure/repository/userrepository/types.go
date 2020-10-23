@@ -3,7 +3,7 @@ package userrepository
 import (
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/domain/user"
 	"github.com/google/uuid"
-	"github.com/hashicorp/go-memdb"
+	"gorm.io/gorm"
 )
 
 type IUserRepository interface {
@@ -13,6 +13,5 @@ type IUserRepository interface {
 }
 
 type UserRepository struct {
-	table string
-	db    *memdb.MemDB
+	db    *gorm.DB
 }

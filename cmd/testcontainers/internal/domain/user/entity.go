@@ -1,5 +1,9 @@
 package user
 
-func (u Entity) ChangeEmail(email string) {
-	u.Email = email
+func (user *Entity) TableName() string {
+	return "users"
+}
+
+func (user Entity) ChangeEmail(email string) {
+	user.Email = email
 }

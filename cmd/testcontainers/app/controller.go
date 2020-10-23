@@ -23,7 +23,7 @@ func (application *Application) InitIndexController() {
 }
 
 func (application *Application) InitUserController() {
-	userRepository, _ := userrepository.New()
+	userRepository := userrepository.New(application.db)
 	userService := userservice.New(application.broker, userRepository)
 	usercontroller.New(userService).Init(application.engine)
 }

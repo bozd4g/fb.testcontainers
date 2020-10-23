@@ -1,69 +1,35 @@
 package userrepository
 
 import (
+	"errors"
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/domain/user"
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/infrastructure/brokerconsts"
 	"github.com/google/uuid"
-	"github.com/hashicorp/go-memdb"
+	"gorm.io/gorm"
 )
 
-func New() (IUserRepository, error) {
-	tableName := "users"
-	schema := &memdb.DBSchema{
-		Tables: map[string]*memdb.TableSchema{
-			tableName: {
-				Name: tableName,
-				Indexes: map[string]*memdb.IndexSchema{
-					"id": {
-						Name:    "id",
-						Unique:  true,
-						Indexer: &memdb.StringFieldIndex{Field: "Id"},
-					},
-					"name": {
-						Name:    "name",
-						Unique:  false,
-						Indexer: &memdb.StringFieldIndex{Field: "Name"},
-					},
-					"surname": {
-						Name:    "surname",
-						Unique:  false,
-						Indexer: &memdb.StringFieldIndex{Field: "Surname"},
-					},
-					"email": {
-						Name:    "email",
-						Unique:  false,
-						Indexer: &memdb.StringFieldIndex{Field: "Email"},
-					},
-					"password": {
-						Name:    "password",
-						Unique:  false,
-						Indexer: &memdb.StringFieldIndex{Field: "Password"},
-					},
-				},
-			},
-		},
-	}
-
-	db, err := memdb.NewMemDB(schema)
-	if err != nil {
-		return nil, err
-	}
-
-	return UserRepository{db: db, table: tableName}, nil
+func New(db *gorm.DB) IUserRepository {
+	return UserRepository{db: db}
 }
 
 func (repository UserRepository) Add(entity user.Entity) (*user.CreatedEvent, error) {
-	transaction := repository.db.Txn(true)
+	transaction := repository.db.Begin()
+	defer func() (*user.CreatedEvent, error) {
+		if r := recover(); r != nil {
+			transaction.Rollback()
+		}
+
+		return nil, errors.New("An error occured while creating a new user!")
+	}()
 
 	entity.Id = uuid.New()
-	err := transaction.Insert(repository.table, entity)
-	if err != nil {
-		transaction.Abort()
+	transaction.Create(&entity)
+	if err := transaction.Error; err != nil {
+		transaction.Rollback()
 		return nil, err
 	}
 
 	transaction.Commit()
-	defer transaction.Abort()
 	return &user.CreatedEvent{
 		ExchangeName: brokerconsts.UserCreatedExchangeName,
 		Id:           entity.Id,
@@ -71,25 +37,20 @@ func (repository UserRepository) Add(entity user.Entity) (*user.CreatedEvent, er
 }
 
 func (repository UserRepository) Get(id uuid.UUID) (*user.Entity, error) {
-	transaction := repository.db.Txn(false)
-	entity, err := transaction.First(repository.table, "id", id)
-	if err != nil {
-		return nil, err
+	var entity user.Entity
+	result := repository.db.First(&entity, id)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-	return entity.(*user.Entity), nil
+
+	return &entity, nil
 }
 
 func (repository UserRepository) GetAll() ([]user.Entity, error) {
-	transaction := repository.db.Txn(false)
-	iterator, err := transaction.Get(repository.table, "id")
-	if err != nil {
-		return nil, err
-	}
-
 	var users []user.Entity
-	for obj := iterator.Next(); obj != nil; obj = iterator.Next() {
-		p := obj.(user.Entity)
-		users = append(users, p)
+	result := repository.db.Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return users, nil

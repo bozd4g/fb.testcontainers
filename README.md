@@ -5,10 +5,15 @@
 
 So how we can implement it?
 
-## Installation 
+## Installation
+
+To run a PostgreSql
+```sh
+docker run --name mypostgres -e POSTGRES_PASSWORD=123456 -e POSTGRES_DB=testcontainers -d -p 5432:5432 postgres
+``` 
 
 To run a RabbitMq;
-```
+```sh
 docker run -d --hostname my-rabbit --name myrabbit -e RABBITMQ_DEFAULT_USER=guest -e RABBITMQ_DEFAULT_PASS=123456 -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
 and create a virtual host called as ``demand``.
