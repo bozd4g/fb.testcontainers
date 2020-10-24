@@ -7,6 +7,7 @@ import (
 
 type IntegrationSuite struct {
 	suite.Suite
+
 	controller IUserController
 }
 

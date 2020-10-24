@@ -20,7 +20,13 @@ func (application *Application) Build() IApplication {
 		VirtualHost: "demand",
 	})
 
-	application.AddPostgreSql("host=localhost user=postgres password=123456 dbname=testcontainers port=5432 sslmode=disable")
+	application.AddPostgreSql(PostgreSqlOpts{
+		Host:     "localhost",
+		User:     "postgres",
+		Password: "123456",
+		Database: "testcontainers",
+		Port:     5432,
+	})
 
 	application.AddRouter()
 	application.AddControllers().InitMiddlewares().AddSwagger()
