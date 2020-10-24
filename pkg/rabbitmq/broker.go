@@ -1,9 +1,13 @@
 package rabbitmq
 
-import "github.com/streadway/amqp"
+import (
+	"fmt"
+	"github.com/streadway/amqp"
+)
 
-func New(ampqUrl string) (IRabbitMq, error) {
-	connection, err := amqp.Dial(ampqUrl)
+func New(opts Opts) (IRabbitMq, error) {
+	amqpString := fmt.Sprintf("amqp://%s:%s@%s/%s", opts.Username, opts.Password, opts.Host, opts.VirtualHost)
+	connection, err := amqp.Dial(amqpString)
 	if err != nil {
 		return nil, err
 	}
