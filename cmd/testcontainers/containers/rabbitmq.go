@@ -12,27 +12,39 @@ type RabbitMqContainer struct {
 	resource  *dockertest.Resource
 	imagename string
 	opts      rabbitmq.Opts
-
-	broker rabbitmq.IRabbitMq
 }
 
 type IRabbitMqContainer interface {
-	Create(opts rabbitmq.Opts) error
-	Connect()
-	Flush()
+	C() RabbitMqContainer
+	Create() error
+	Connect() rabbitmq.IRabbitMq
+	Flush(broker rabbitmq.IRabbitMq, queues ...string) error
 }
 
 func NewRabbitMqContainer(pool *dockertest.Pool) IRabbitMqContainer {
-	return RabbitMqContainer{pool: pool, imagename: "rabbitmq-testcontainer"}
+	opts := rabbitmq.Opts{
+		Username: "testcontainer",
+		Password: "Aa123456.",
+	}
+
+	return RabbitMqContainer{pool: pool, opts: opts, imagename: "rabbitmq-testcontainer"}
 }
 
-func (container RabbitMqContainer) Create(opts rabbitmq.Opts) error {
+func (container RabbitMqContainer) C() RabbitMqContainer {
+	return container
+}
+
+func (container RabbitMqContainer) Create() error {
+	if IsRunning(*container.pool, container.imagename) {
+		return nil
+	}
+
 	dockerOpts := dockertest.RunOptions{
 		Repository: "rabbitmq",
 		Tag:        "3-management",
 		Env: []string{
-			"RABBITMQ_DEFAULT_USER=" + opts.Username,
-			"RABBITMQ_DEFAULT_PASS=" + opts.Password,
+			"RABBITMQ_DEFAULT_USER=" + container.opts.Username,
+			"RABBITMQ_DEFAULT_PASS=" + container.opts.Password,
 		},
 		ExposedPorts: []string{"5672", "15672"},
 		PortBindings: map[docker.Port][]docker.PortBinding{
@@ -47,18 +59,35 @@ func (container RabbitMqContainer) Create(opts rabbitmq.Opts) error {
 		log.Fatalf("Could not start resource (RabbitMQ Test Container): %s", err.Error())
 	}
 
-	container.opts = opts
 	container.resource = resource
 	return nil
 }
 
-func (container RabbitMqContainer) Connect() {
-	broker, err := rabbitmq.New(container.opts)
-	if err != nil {
-		panic(err)
+func (container RabbitMqContainer) Connect() rabbitmq.IRabbitMq {
+	var broker rabbitmq.IRabbitMq
+	if err := container.pool.Retry(func() error {
+		var err error
+		broker, err = rabbitmq.New(container.opts)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		log.Fatalf("Could not connect to docker: %s", err)
 	}
 
-	container.broker = broker
+	return broker
 }
 
-func (container RabbitMqContainer) Flush() {}
+func (container RabbitMqContainer) Flush(broker rabbitmq.IRabbitMq, queues ...string) error {
+	var err error
+	for _, queue := range queues {
+		err = broker.Purge(queue)
+		if err != nil {
+			break
+		}
+	}
+
+	return err
+}

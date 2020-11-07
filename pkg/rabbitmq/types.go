@@ -8,6 +8,8 @@ type IRabbitMq interface {
 	Publish(exchangeName string, body []byte) error
 	BindQueue(queueName string, exchangeName string) error
 	Consume(queueName string, prefetchCount int, onConsumed func(message []byte)) error
+	Purge(queueName string) error
+	Bind(exchangeName, queueName string) error
 	Close()
 }
 

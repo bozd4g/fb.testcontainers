@@ -3,19 +3,12 @@ package app
 import (
 	"fmt"
 	"github.com/bozd4g/fb.testcontainers/cmd/testcontainers/internal/domain/user"
+	"github.com/bozd4g/fb.testcontainers/pkg/postgresql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type PostgreSqlOpts struct {
-	Host     string
-	User     string
-	Password string
-	Database string
-	Port     int
-}
-
-func (application *Application) AddPostgreSql(opts PostgreSqlOpts) *Application {
+func (application *Application) AddPostgreSql(opts postgresql.Opts) *Application {
 	defaultDsn := "host=%s user=%s password=%s dbname=%s port=%d sslmode=disable"
 	dsn := fmt.Sprintf(defaultDsn, opts.Host, opts.User, opts.Password, opts.Database, opts.Port)
 

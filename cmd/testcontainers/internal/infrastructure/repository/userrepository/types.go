@@ -13,5 +13,5 @@ type IUserRepository interface {
 }
 
 type UserRepository struct {
-	db    *gorm.DB
+	db *gorm.DB
 }

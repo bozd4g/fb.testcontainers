@@ -32,7 +32,35 @@ func (broker *RabbitMq) BindQueue(queueName string, exchangeName string) error {
 	return broker.channel.QueueBind(queueName, "", exchangeName, false, nil)
 }
 
+func (broker *RabbitMq) Purge(queueName string) error {
+	_, err := broker.channel.QueuePurge(queueName, true)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (broker *RabbitMq) Close() {
 	broker.connection.Close()
 	broker.channel.Close()
+}
+
+func (broker *RabbitMq) Bind(exchangeName, queueName string) error {
+	err := broker.DeclareExhange(exchangeName)
+	if err != nil {
+		return err
+	}
+
+	_, err = broker.DeclareQueue(queueName)
+	if err != nil {
+		return err
+	}
+
+	err = broker.BindQueue(queueName, exchangeName)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

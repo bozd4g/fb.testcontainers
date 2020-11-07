@@ -19,17 +19,8 @@ func (application *Application) AddRabbitMq(opts rabbitmq.Opts) *Application {
 }
 
 func (application *Application) InitUserCreatedEvent() {
-	_, err := application.broker.DeclareQueue(brokerconsts.UserCreatedQueueName)
+	err := application.broker.Bind(brokerconsts.UserCreatedExchangeName, brokerconsts.UserCreatedQueueName)
 	if err != nil {
-		panic(err)
-	}
-	err = application.broker.DeclareExhange(brokerconsts.UserCreatedExchangeName)
-	if err != nil {
-		panic(err)
-	}
-
-	err = application.broker.BindQueue(brokerconsts.UserCreatedQueueName, brokerconsts.UserCreatedExchangeName)
-	if err != nil {
-		panic(err)
+		application.logger.Error("An error occured while binding to exchange! ", err)
 	}
 }

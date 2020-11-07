@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/bozd4g/fb.testcontainers/pkg/postgresql"
 	"github.com/bozd4g/fb.testcontainers/pkg/rabbitmq"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -17,10 +18,10 @@ func (application *Application) Build() IApplication {
 		Username:    "guest",
 		Password:    "123456",
 		Host:        "localhost",
-		VirtualHost: "demand",
+		VirtualHost: "",
 	})
 
-	application.AddPostgreSql(PostgreSqlOpts{
+	application.AddPostgreSql(postgresql.Opts{
 		Host:     "localhost",
 		User:     "postgres",
 		Password: "123456",
