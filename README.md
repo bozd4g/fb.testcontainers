@@ -18,7 +18,8 @@ $ docker run -d --hostname my-rabbit --name myrabbit -e RABBITMQ_DEFAULT_USER=gu
 ```
 and create a virtual host called as ``demand``.
 
-When you run the integration tests and after the result, clear all the containers as below;```sh 
+When you run the integration tests and after the result, clear all the containers as below;
+```sh 
 $ docker rm -f $(docker ps -aq)
 ```
 
