@@ -7,7 +7,7 @@ type IRabbitMq interface {
 	DeclareQueue(name string) (amqp.Queue, error)
 	Publish(exchangeName string, body []byte) error
 	BindQueue(queueName string, exchangeName string) error
-	Consume(queueName string, prefetchCount int, onConsumed func(message []byte)) error
+	Consume(queueName string, prefetchCount int, onConsumed func(message []byte) bool) error
 	Purge(queueName string) error
 	Bind(exchangeName, queueName string) error
 	Close()

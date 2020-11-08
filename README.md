@@ -20,6 +20,11 @@ and create a virtual host called as ``demand``.
 
 ## Tests
 
+To run all tests;
+```sh
+$ go test -v ./...
+```
+
 When you run the integration tests and after the result, clear all the containers as below;
 ```sh 
 $ docker rm -f $(docker ps -aq)

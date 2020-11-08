@@ -18,7 +18,7 @@ type IRabbitMqContainer interface {
 	C() RabbitMqContainer
 	Create() error
 	Connect() rabbitmq.IRabbitMq
-	Flush(broker rabbitmq.IRabbitMq, queues ...string) error
+	Flush(queues ...string) error
 }
 
 func NewRabbitMqContainer(pool *dockertest.Pool) IRabbitMqContainer {
@@ -80,7 +80,9 @@ func (container RabbitMqContainer) Connect() rabbitmq.IRabbitMq {
 	return broker
 }
 
-func (container RabbitMqContainer) Flush(broker rabbitmq.IRabbitMq, queues ...string) error {
+func (container RabbitMqContainer) Flush(queues ...string) error {
+	broker := container.Connect()
+
 	var err error
 	for _, queue := range queues {
 		err = broker.Purge(queue)

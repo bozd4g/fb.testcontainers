@@ -5,13 +5,13 @@ import (
 	"os"
 )
 
-func (broker *RabbitMq) Consume(queueName string, prefetchCount int, onConsumed func(message []byte)) error {
+func (broker *RabbitMq) Consume(queueName string, prefetchCount int, onConsumed func(message []byte) bool) error {
 	err := broker.channel.Qos(prefetchCount, 0, false)
 	if err != nil {
 		return err
 	}
 
-	consumerChannel, err := broker.channel.Consume(queueName,"",false,false,false,false,nil)
+	consumerChannel, err := broker.channel.Consume(queueName,"",true,false,false,false,nil)
 	if err != nil {
 		return err
 	}
@@ -21,10 +21,16 @@ func (broker *RabbitMq) Consume(queueName string, prefetchCount int, onConsumed 
 	go func() {
 		log.Printf("Consumer is ready, PID: %d", os.Getpid())
 		for d := range consumerChannel {
-			onConsumed(d.Body)
-
+			response := onConsumed(d.Body)
 			if err := d.Ack(false); err != nil {
 				log.Printf("Error acknowledging message: %s", err)
+			}
+
+			if !response {
+				log.Printf("Consumer is stopped, PID: %d", os.Getpid())
+
+				stopChan <- true
+				break
 			}
 		}
 	}()

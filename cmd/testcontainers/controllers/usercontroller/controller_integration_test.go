@@ -70,7 +70,7 @@ func (s *IntegrationSuite) SetupSuite() {
 func (s *IntegrationSuite) AfterTest(_, _ string) {
 	s.postgresqlContainer.Flush(s.db)
 
-	err := s.rabbitmqContainer.Flush(s.broker, brokerconsts.UserCreatedQueueName)
+	err := s.rabbitmqContainer.Flush(brokerconsts.UserCreatedQueueName)
 	require.NoError(s.T(), err)
 }
 
@@ -99,7 +99,7 @@ func (s *IntegrationSuite) Test_CreateUser_ReturnsSuccess() {
 	util.HttpRecorder(s.T(), s.engine, req, func(w *httptest.ResponseRecorder) bool {
 		statusOK := w.Code == http.StatusCreated
 		if statusOK {
-			err = s.broker.Consume(brokerconsts.UserCreatedQueueName, 1, func(message []byte) {
+			err = s.broker.Consume(brokerconsts.UserCreatedQueueName, 1, func(message []byte) bool {
 				var event user.CreatedEvent
 				err = json.Unmarshal(message, &event)
 				require.NoError(s.T(), err)
@@ -109,6 +109,7 @@ func (s *IntegrationSuite) Test_CreateUser_ReturnsSuccess() {
 				require.NoError(s.T(), result.Error)
 
 				require.Equal(s.T(), entity.Id.String(), event.Id.String())
+				return false // Stop consuming
 			})
 
 			require.NoError(s.T(), err)
