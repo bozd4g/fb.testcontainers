@@ -30,6 +30,6 @@ When you run the integration tests and after the result, clear all the container
 $ docker rm -f $(docker ps -aq)
 ```
 
-## Articles [WIP]
+## Articles
 
-...
+- Integration Testing with Golang (Test Containers) - [Link](https://bit.ly/38k6THn "Integration Testing with Golang (Test Containers")
