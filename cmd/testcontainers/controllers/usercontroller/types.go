@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type IUserController interface{
+type IUserController interface {
 	Init(e *gin.Engine)
 }
 

@@ -85,12 +85,13 @@ func (s *IntegrationSuite) Test_GetAllUsers_ReturnsSuccess() {
 }
 
 func (s *IntegrationSuite) Test_CreateUser_ReturnsSuccess() {
-	jsonUser, err := json.Marshal(userservice.UserCreateRequestDto{
+	userCreateRequestDto := userservice.UserCreateRequestDto{
 		Name:     "Furkan",
 		Surname:  "Bozdag",
 		Email:    "me@furkanbozdag.com",
 		Password: "Aa12345.",
-	})
+	}
+	jsonUser, err := json.Marshal(userCreateRequestDto)
 	require.NoError(s.T(), err)
 
 	req, err := http.NewRequest(http.MethodPost, "/api/users", bytes.NewBuffer(jsonUser))
@@ -109,6 +110,7 @@ func (s *IntegrationSuite) Test_CreateUser_ReturnsSuccess() {
 				require.NoError(s.T(), result.Error)
 
 				require.Equal(s.T(), entity.Id.String(), event.Id.String())
+				require.Equal(s.T(), entity.Email, userCreateRequestDto.Email)
 				return false // Stop consuming
 			})
 
