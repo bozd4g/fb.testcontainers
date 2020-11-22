@@ -27,7 +27,7 @@ func (controller UserController) Init(e *gin.Engine) {
 // @Success 201 {string} string	"Success"
 // @Router /api/users [post]
 func (controller UserController) createHandler(c *gin.Context) {
-	var userDto userservice.UserDto
+	var userDto userservice.UserCreateRequestDto
 	if err := c.ShouldBindJSON(&userDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -7,7 +7,7 @@ import (
 )
 
 type IUserService interface {
-	Create(entity UserDto) error
+	Create(entity UserCreateRequestDto) error
 	GetAll() ([]UserDto, error)
 	Get(id uuid.UUID) (*UserDto, error)
 }

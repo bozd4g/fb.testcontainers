@@ -14,7 +14,7 @@ func New(broker rabbitmq.IRabbitMq, repository userrepository.IUserRepository) I
 	return UserService{broker: broker, repository: repository}
 }
 
-func (service UserService) Create(userDto UserDto) error {
+func (service UserService) Create(userDto UserCreateRequestDto) error {
 	var entity user.Entity
 	err := mapstructure.Decode(userDto, &entity)
 	if err != nil {
